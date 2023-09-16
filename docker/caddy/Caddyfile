@@ -1,0 +1,11 @@
+:80 {
+	root * /www/public
+    file_server /assets/*
+    php_fastcgi php:9000
+
+    @router expression `path_regexp('/.*[^assets]/')`
+
+	rewrite @router /index.php?{path}&{query}
+
+	#rewrite /assets/* /assets/{path}
+}

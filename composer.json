@@ -1,0 +1,20 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "Config\\": "config/"
+        }
+    },
+    "require": {
+        "psr/http-message": "^2.0",
+        "psr/log": "^3.0",
+        "an/framework": "1.0",
+        "psr/container": "^2.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "vendor/an/framework"
+        }
+    ]
+}

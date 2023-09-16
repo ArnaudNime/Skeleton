@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    padding: 0;
+    padding-top: 200px;
+}
+.heading {
+    text-align: center;
+    font-size: 4em;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    font-family: main, serif;
+    background-color: black;
+    color: red;
+}
+
+ @font-face {
+     font-family: main;
+     src: url("/assets/font/main.ttf");
+ }

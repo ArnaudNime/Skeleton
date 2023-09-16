@@ -1,0 +1,23 @@
+{
+    "name": "an/framework",
+    "description": "easy framework",
+    "keywords": ["framework", "php 8.2", "simple", "api", "web"],
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "Arnaud Nime",
+            "email": "arnaud.nime.developer@gmail.com",
+            "role": "developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AN\\Skeleton\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0"
+        }
+    }
+}
