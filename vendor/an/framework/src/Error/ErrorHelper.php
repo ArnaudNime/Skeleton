@@ -17,7 +17,13 @@ class ErrorHelper
         $this->display($this->interpollate([
             'title' => get_class($e),
             'message' => $e->getMessage(),
+            'where' => $e->getFile() . ' ' . $e->getLine(),
+            'trace' => $this->getBackTrace($e->getTrace()),
         ], $template));
+    }
 
+    private function getBackTrace(array $traces): string
+    {
+        return implode('<br>', array_map(fn ($trace) => $trace['file'] . ' ' . $trace['line'] ,$traces));
     }
 }

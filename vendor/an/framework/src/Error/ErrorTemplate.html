@@ -8,16 +8,39 @@
             margin: 0;
             padding-top: 20px;
             background-color: black;
-            color: white;
+            color: orangered;
             font-size: 2em;
+            text-align:center;
         }
         h1,h2 {
-            text-align: center;
+            : center;
+            animation: broken;
+            animation-duration: 500ms;
+            animation-iteration-count: 1;
+            animation-direction: normal;
+            animation-fill-mode: forwards;
         }
+        h3 {
+            margin-top: 100px;
+        }
+
+         @keyframes broken {
+             from {
+                 rotate: 0deg;
+             }
+
+             to {
+                 rotate: -3deg;
+             }
+         }
     </style>
 </head>
 <body>
-  <h1>{{ title }}</h1>
-  <h2>{{ message }}</h2>
+    <h1>{{ title }}</h1>
+    <h2>{{ message }}</h2>
+    <h3> {{ where }}</h3>
+    <div>
+        {{ trace }}
+    </div>
 </body>
 </html>

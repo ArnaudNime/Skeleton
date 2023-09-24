@@ -2,19 +2,33 @@
 
 namespace AN\Skeleton\Router;
 
-use AN\Skeleton\Server\Request;
+use AN\Skeleton\Http\Request;
+use AN\Skeleton\Http\RequestInterface;
+use AN\Skeleton\Router\Route\GetRouteInterface;
+use AN\Skeleton\Router\Route\PostRouteInterface;
+use AN\Skeleton\Router\Route\RouteInterface;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Router
 {
     private mixed $routes;
-    private $routeFactories;
 
-    public function __construct(ContainerInterface $container)
-    {
-        $this->routes = $container->get(RouteInterface::class);
-        $this->routeFactories = $container->get('RouteFactoryInterface::class');
+    /**
+     * @param ContainerInterface $container
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function __construct(
+        private readonly ContainerInterface $container,
+        private RequestInterface $request
+    ) {
+        $this->routes = match ($this->request->getMethod()) {
+            'GET' => $container->get(GetRouteInterface::class),
+            'POST' => $container->get(PostRouteInterface::class),
+            default => throw new UnknownRequestMethod($this->request->getMethod()),
+        };
     }
 
     /**
@@ -23,28 +37,67 @@ class Router
      */
     public function match(): void
     {
-        $this->getRequest();
-        $handler = $this->routeFactories->createHandler($this->getWantedRoute());
-        $handler->handle();
+        $this->getHandler()->handle($this->request);
+    }
+
+    private function getHandler(): Handler
+    {
+        $route = $this->getWantedRoute();
+        $handlerClass = $route::getHandler($route);
+
+
+        return new $handlerClass($this->container);
     }
 
     /**
-     * @return Route
      * @throws UnknownRoute
      */
     private function getWantedRoute(): RouteInterface
     {
-        $wantedRoute = array_key_first($_GET) ?? '/';
-        $existingRoutes = array_map(fn($enum) => $enum->value,  $this->routes::cases());
-        if (!in_array($wantedRoute, $existingRoutes)) {
-            throw new UnknownRoute($wantedRoute);
+        $wantedRoute = $this->request->getUri() ?? '/';
+        $existingRoutes = $this->getExistingRoutes();
+
+        $routesParts = explode('/', $wantedRoute);
+
+        foreach ($existingRoutes as $existingRoute) {
+            $existingRoutesParts = explode('/', $existingRoute);
+            $diff = array_diff($routesParts, $existingRoutesParts);
+
+
+            if (count($diff) === 0) {
+                return $this->routes::from($existingRoute);
+            }
+
+            if (count($existingRoutesParts) !== count($routesParts)) {
+                continue;
+            }
+
+            $params = [];
+            foreach (array_keys($diff) as $key) {
+                if (preg_match('/{.*}/', $existingRoutesParts[$key])) {
+                    $param = str_replace(['{', '}'], '', $existingRoutesParts[$key]);
+                    $params[$param] = $routesParts[$key];
+                } else {
+                    continue 2;
+                }
+            }
+
+            $this->request = new Request($params);
+
+            return $this->routes::from($existingRoute);
         }
 
-        return  $this->routes::from($wantedRoute);
+        throw new UnknownRoute($wantedRoute);
     }
 
-    private function getRequest()
+    private function getExistingRoutes(): array
     {
-        return new Request();
+        $routes = array_map(fn($enum) => $enum->value, $this->routes::cases());
+
+        if (count($routes) !== count(array_unique($routes))) {
+            throw new NotUniqueRoute();
+        }
+
+        return $routes;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace AN\Skeleton\Router;
 
+use AN\Skeleton\Http\RequestInterface;;
+
 interface Handler
 {
-    public function handle(): void;
+    public function handle(RequestInterface $request): void;
 }

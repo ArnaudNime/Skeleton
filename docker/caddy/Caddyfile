@@ -6,6 +6,4 @@
     @router expression `path_regexp('/.*[^assets]/')`
 
 	rewrite @router /index.php?{path}&{query}
-
-	#rewrite /assets/* /assets/{path}
 }

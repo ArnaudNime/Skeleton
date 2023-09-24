@@ -1,13 +1,12 @@
 body {
     margin: 0;
-    padding: 0;
-    padding-top: 200px;
+    padding:100px 0 0 0;
 }
 .heading {
     text-align: center;
     font-size: 4em;
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     font-family: main, serif;
     background-color: black;
     color: red;
